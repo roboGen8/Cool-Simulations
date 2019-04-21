@@ -12,6 +12,7 @@ from constants import *
 # stoplight_map = dict()
 # readStoplights(stoplight_map)
 
+
 #Future Event List
 fel = FutureEventList()
 
@@ -75,10 +76,11 @@ world = World()
 now = 0
 while not fel.is_empty():
     currEvent = fel.pop()
+    print("heloooooooooooooooooooo")
     world.updateServer(currEvent)
     timeDif = currEvent.ts - now
     now = currEvent.ts
-    eventHandler(timeDif, currEvent, world)
+    eventHandler(now, timeDif, currEvent, world)
 
 end_time = time.time()
 print(end_time - start_time)

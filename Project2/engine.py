@@ -2,6 +2,9 @@ import queue
 from constants import *
 import random
 
+global fin_vehicles
+fin_vehicles = []
+
 class Event:
     def __init__(self, ts, index10, index11, index12, index14):
         self.ts = ts
@@ -36,10 +39,10 @@ class FutureEventList:
 #     def __init__(self):
 class Vehicle:
     def __init__(self, start):
-        self.start = start_time
+        self.start = start
         self.finished = False
 
-    def exitVehicle(end):
+    def exitVehicle(self, end):
         self.end = end
         self.finished = True
 
@@ -53,7 +56,7 @@ class World:
 
         self.drivethru = [True, True, True, True, True] #for servers 10, 11, 12, 13, 14
 
-    def updateServer(currEvent):
+    def updateServer(self, currEvent):
         count10=count11=count12=count14=0
         for i in currEvent.index10:
             if i % 3 == 0:
@@ -79,7 +82,7 @@ class World:
         self.s13 = (5 - 4) / 5
         self.s14 = (5 - count14) / 5
 
-    def passIntersection():
+    def passIntersection(self):
         out = [False, False, False, False, False] #return which servers whill allow vehicles to go through
         for i in range(len(self.drivethru)):
             if self.drivethru[i] == False:
@@ -98,30 +101,47 @@ class World:
                     server_prob = self.s13
                 else:
                     server_prob = self.s14
-            temp = car_prob * server_prob
-            if temp >= 0.5:
-                self.drivethru[i] = True #no change
-                out[i] = True
-            else:
-                self.drivethru[i] = False
-                out[i] = False
+                temp = car_prob * server_prob
+                if temp >= 0.5:
+                    self.drivethru[i] = True #no change
+                    out[i] = True
+                else:
+                    self.drivethru[i] = False
+                    out[i] = False
+        return out
 
 
 
 
-        if self.drivethru == False:
-            self.drivethru = True
-            return True #let vehicle pass the Intersection
-        else:
-            #average vehicle speed from data is 4.2672m/s vs mean vehicle length of 5m
-            prob = 4.2672 / 5.0
-            if num == 10:
-                temp = prob * world.s10 * random.uniform(0, 1)
+        # if self.drivethru == False:
+        #     self.drivethru = True
+        #     return True #let vehicle pass the Intersection
+        # else:
+        #     #average vehicle speed from data is 4.2672m/s vs mean vehicle length of 5m
+        #     prob = 4.2672 / 5.0
+        #     if num == 10:
+        #         temp = prob * world.s10 * random.uniform(0, 1)
 
 
 
 
 
 #Event Handler Procedure
-def eventHandler(timeDif, evt, world):
+def eventHandler(now, timeDif, evt, world):
     for i in range(timeDif):
+        out = world.passIntersection()
+        for j in range(len(out)):
+            if out[j]:
+                if j == 0:
+                    car = Vehicle(now)
+                    world.q10to11.put(car)
+                elif j == 1:
+                    world.q11to12.put(world.q10to11.get())
+                elif j == 2:
+                    world.q12to13.put(world.q11to12.get())
+                elif j == 3:
+                    world.q13to14.put(world.q12to13.get())
+                else:
+                    finCar = world.q13to14.get()
+                    finCar.exitVehicle(now)
+                    fin_vehicles.append(finCar)
