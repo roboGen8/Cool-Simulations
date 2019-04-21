@@ -1,3 +1,18 @@
+#Server/Intersection size which means how many cars can be in intersection:
+# server10 = 30 #doesn't matter cus time starts from here
+# server11 = 25
+# server12 = 25
+# server13 = 20
+# server14 = 30
+
+from10to11 = 56
+from11to12 = 57
+from12to13 = 59
+from13to14 = 60
+
+
+
+
 east10 = [8, 1.8, 1.8, 30, 3.8, 55]
 west10 = [5, 3.6, 4.2, 28, 3.8, 55]
 north10 = [7, 3.6, 2.2, 34.7, 3.6, 49.3]

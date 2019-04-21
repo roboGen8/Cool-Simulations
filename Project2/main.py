@@ -65,13 +65,21 @@ for t in range(1, 901):
     fel.push(event)
 
 
+
 #Time statistics
 start_time = time.time()
 NEvents = 0
 
 #Event Processing Loop
-
+world = World()
+now = 0
+while not fel.is_empty():
+    currEvent = fel.pop()
+    world.updateServer(currEvent)
+    timeDif = currEvent.ts - now
+    now = currEvent.ts
+    eventHandler(timeDif, currEvent, world)
 
 end_time = time.time()
 print(end_time - start_time)
-print(fel.q.qsize())
+# print(fel.q.qsize())
